@@ -7,24 +7,15 @@ import cors from 'cors';
 
 dotenv.config();
 
-//CORS configuration
-const allowedOrigins = ['http://91.210.57.222', 'http://solutions.zrm.dk'];
-app.use(cors({
-  origin: function (origin, callback) {
-    //Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
-
-
 const app = express();
 const port = 8000;
 
+// CORS configuration
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 //Store uploads in memory
 const upload = multer({
   storage: multer.memoryStorage(),
