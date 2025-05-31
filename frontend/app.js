@@ -29,6 +29,7 @@ function uploadFiles() {
   const formData = new FormData();
   const allowedTypes = [
     "text/csv",
+    "text/plain",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ];
 
@@ -49,19 +50,22 @@ function uploadFiles() {
   }
 
   fetch("http://localhost:8000/upload", {
-    method: "POST",
-    body: formData,
+  method: "POST",
+  body: formData,
+})
+  .then(response => response.json())
+  .then(data => {
+  showMessage("Files uploaded successfully!", "success");
+  alert("Success!"); // ← temporary debugging helper
+    //const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+    //successModal.show();
   })
-    .then(response => response.json())
-    .then(data => {
-      showMessage("Files uploaded successfully!", "success");
-    })
-    .catch(error => {
-      console.error(error);
-      showMessage("Failed to upload files. Please try again.", "danger");
-    });
-}
+  .catch(error => {
+    console.error(error);
+    showMessage("Failed to upload files. Please try again.", "danger");
+  });
 
+}
 
 function showMessage(text, type) {
   const messageBox = document.getElementById("message");
