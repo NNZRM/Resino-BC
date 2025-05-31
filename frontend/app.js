@@ -71,4 +71,3 @@ function showMessage(text, type) {
   messageBox.className = `alert alert-${type}`;
   messageBox.textContent = text;
 }
-//webhook test
