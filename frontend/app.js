@@ -49,7 +49,7 @@ function uploadFiles() {
     formData.append("files", file);
   }
 
-  fetch("http://localhost:8000/upload", {
+  fetch("http://91.210.57.222:8000/upload", {
   method: "POST",
   body: formData,
 })
@@ -71,4 +71,3 @@ function showMessage(text, type) {
   messageBox.className = `alert alert-${type}`;
   messageBox.textContent = text;
 }
-// Webhook test
