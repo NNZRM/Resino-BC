@@ -55,10 +55,9 @@ function uploadFiles() {
 })
   .then(response => response.json())
   .then(data => {
-  showMessage("Files uploaded successfully!", "success");
-  alert("Success!"); // ← temporary debugging helper
-    //const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-    //successModal.show();
+    showMessage("Files uploaded successfully!", "success");
+    const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+    successModal.show();
   })
   .catch(error => {
     console.error(error);
