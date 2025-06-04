@@ -49,7 +49,7 @@ function uploadFiles() {
     formData.append("files", file);
   }
 
-  fetch("http://91.210.57.222:8000/upload", {
+  fetch("/upload", {
   method: "POST",
   body: formData,
 })
