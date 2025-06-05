@@ -39,7 +39,6 @@ function chartsShowError(message) {
 
 console.log("YOOOOOO");
 
-// ✅ Attach listener first
 ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("🔍 PageLoad data from Zoho CRM:", data);
 
@@ -55,7 +54,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
   })
     .then(res => res.json())
     .then(data => {
-      console.log("✅ KontoNummer received:", data.kontoNummer);
+      console.log("KontoNummer received:", data.kontoNummer);
 
       const testData = {
         label: `Konto ${data.kontoNummer} Sales`,
@@ -66,7 +65,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
       chartsRenderChart(testData);
     })
     .catch(err => {
-      console.error("❌ Fetch error:", err);
+      console.error("Fetch error:", err);
       chartsShowError("Could not fetch account details.");
     });
 });

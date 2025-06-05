@@ -23,6 +23,11 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
 });
 
+app.use((req, res, next) => {
+  console.log("Received request:", req.method, req.url);
+  next();
+});
+
 //SFTP config
 const sftpConfig = {
   host: process.env.SFTP_HOST,
