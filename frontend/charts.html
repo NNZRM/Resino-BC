@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Customer Graph</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://js.zohostatic.com/support/zohocrm/widget/js/ZohoEmbededAppSDK.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #loading {
+      font-size: 16px;
+      color: gray;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Customer Activity Graph</h2>
+  <div id="loading">Loading graph...</div>
+  <canvas id="myChart" style="display: none;"></canvas>
+
+  <script>
+    function renderChart(data) {
+      const ctx = document.getElementById("myChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: data.label || "Activity",
+            data: data.values,
+            borderColor: "blue",
+            backgroundColor: "lightblue",
+            fill: false,
+            tension: 0.2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("myChart").style.display = "block";
+    }
+
+    //Test data
+    const testData = {
+      label: "Sales Over Time",
+      labels: ["Jan", "Feb", "Mar", "Apr"],
+      values: [120, 140, 180, 200]
+    };
+
+    renderChart(testData);
+
+    //Zoho CRM integration
+    /*
+    ZOHO.embeddedApp.on("PageLoad", function(data) {
+      const accountId = data.EntityId;
+      fetch(`/api/graph-data?accountId=${accountId}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Could not load data.");
+          return res.json();
+        })
+        .then(renderChart)
+        .catch(err => showError(err.message));
+    });
+
+    ZOHO.embeddedApp.init();
+    */
+  </script>
+</body>
+</html>
