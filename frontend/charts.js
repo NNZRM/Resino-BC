@@ -37,20 +37,39 @@ function chartsShowError(message) {
   document.getElementById("charts-loading").textContent = "⚠️ " + message;
 }
 
+// Initialize Zoho SDK first
+ZOHO.embeddedApp.init();
+
+// Then bind the PageLoad listener
 ZOHO.embeddedApp.on("PageLoad", function(data) {
-  console.log("🔍 PageLoad data from Zoho CRM:", data);
+  console.log("PageLoad data from Zoho CRM:", data);
 
   const accountId = data.EntityId;
   document.getElementById("charts-header").textContent = `Business Central Graph (ID: ${accountId})`;
 
-  // Test chart data
-  const testData = {
-    label: "Sales Over Time",
-    labels: ["Jan", "Feb", "Mar", "Apr"],
-    values: [120, 140, 180, 200]
-  };
+  // Fetch KontoNummer from backend
+  fetch("http://localhost:8000/api/get-kontonummer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ accountId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("KontoNummer received:", data.kontoNummer);
 
-  chartsRenderChart(testData);
+      // Use KontoNummer to generate graph
+      const testData = {
+        label: `Konto ${data.kontoNummer} Sales`,
+        labels: ["Jan", "Feb", "Mar", "Apr"],
+        values: [100, 200, 150, 180]
+      };
+
+      chartsRenderChart(testData);
+    })
+    .catch(err => {
+      console.error("Fetch error:", err);
+      chartsShowError("Could not fetch account details.");
+    });
 });
-
-ZOHO.embeddedApp.init();

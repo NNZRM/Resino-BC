@@ -4,6 +4,7 @@ import SFTPClient from "ssh2-sftp-client";
 import path from "path";
 import dotenv from "dotenv";
 import cors from 'cors';
+import { fetchAccount } from './zoho.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ const allowedMimeTypes = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ];
 
+// Endpoint to handle file uploads
 app.post("/upload", upload.array("files"), async (req, res) => {
   const sftp = new SFTPClient();
   const now = new Date();
@@ -96,6 +98,31 @@ app.post("/upload", upload.array("files"), async (req, res) => {
     res.status(500).json({ error: "Upload mislykkedes" });
   }
 });
+
+// Endpoint to fetch Konto_Nummer1 from Zoho
+import { fetchAccount } from './zoho.js';
+
+app.post("/api/get-kontonummer", express.json(), async (req, res) => {
+  const { accountId } = req.body;
+
+  if (!accountId) {
+    return res.status(400).json({ error: "Missing accountId in request body" });
+  }
+
+  try {
+    const kontoNummer = await fetchAccount(accountId);
+
+    if (!kontoNummer) {
+      return res.status(404).json({ error: "Account not found or Konto_Nummer1 is empty" });
+    }
+
+    res.json({ kontoNummer });
+  } catch (error) {
+    console.error("Error fetching account:", error);
+    res.status(500).json({ error: "Failed to fetch account data" });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
