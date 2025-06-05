@@ -3,88 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Customer Graph</title>
+  <link rel="stylesheet" href="charts.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Use the correct Zoho Embedded App SDK -->
   <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    #loading {
-      font-size: 16px;
-      color: gray;
-    }
-    canvas {
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
 </head>
 <body>
-  <h2 id="header">Customer Activity Graph</h2>
-  <div id="loading">Loading...</div>
-  <canvas id="myChart" style="display: none;"></canvas>
+  <h2 id="charts-header">Business Central Graph</h2>
+  <div id="charts-loading">Loading...</div>
+  <canvas id="charts-myChart" style="display: none;"></canvas>
 
-  <script>
-    function renderChart(data) {
-      const ctx = document.getElementById("myChart").getContext("2d");
-
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: data.label || "Activity",
-            data: data.values,
-            borderColor: "blue",
-            backgroundColor: "lightblue",
-            fill: false,
-            tension: 0.2
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              display: true
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      document.getElementById("loading").style.display = "none";
-      document.getElementById("myChart").style.display = "block";
-    }
-
-    function showError(message) {
-      document.getElementById("loading").textContent = "⚠️ " + message;
-    }
-
-    // Init listener
-    ZOHO.embeddedApp.on("PageLoad", function(data) {
-      console.log("PageLoad data from Zoho CRM:", data);
-
-      const accountId = data.EntityId;
-      document.getElementById("header").textContent = `Customer Activity Graph (ID: ${accountId})`;
-
-      // Test chart
-      const testData = {
-        label: "Sales Over Time",
-        labels: ["Jan", "Feb", "Mar", "Apr"],
-        values: [120, 140, 180, 200]
-      };
-
-      renderChart(testData);
-    });
-
-    // Initialize Zoho SDK
-    ZOHO.embeddedApp.init();
-  </script>
+  <script src="charts.js"></script>
 </body>
 </html>
