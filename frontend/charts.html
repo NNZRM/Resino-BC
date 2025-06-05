@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <title>Customer Graph</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://js.zohostatic.com/support/zohocrm/widget/js/ZohoEmbededAppSDK.min.js"></script>
+  <!-- Use the correct Zoho Embedded App SDK -->
+  <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -65,13 +66,14 @@
       document.getElementById("loading").textContent = "⚠️ " + message;
     }
 
+    // Init listener
     ZOHO.embeddedApp.on("PageLoad", function(data) {
-      const accountId = data.EntityId;
+      console.log("PageLoad data from Zoho CRM:", data);
 
-      // TEST CRM PAGE LOAD
+      const accountId = data.EntityId;
       document.getElementById("header").textContent = `Customer Activity Graph (ID: ${accountId})`;
 
-      // tEST DATA  
+      // Test chart
       const testData = {
         label: "Sales Over Time",
         labels: ["Jan", "Feb", "Mar", "Apr"],
@@ -79,14 +81,9 @@
       };
 
       renderChart(testData);
-
-      // Later you can switch to real fetch:
-      // fetch(`/api/graph-data?accountId=${accountId}`)
-      //   .then(res => res.json())
-      //   .then(renderChart)
-      //   .catch(err => showError(err.message));
     });
 
+    // Initialize Zoho SDK
     ZOHO.embeddedApp.init();
   </script>
 </body>
