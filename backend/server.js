@@ -102,7 +102,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
 // Endpoint to fetch Konto_Nummer1 from Zoho
 import { fetchAccount } from './zoho.js';
 
-app.post("/api/get-kontonummer", express.json(), async (req, res) => {
+app.post("/get-kontonummer", express.json(), async (req, res) => {
   const { accountId } = req.body;
 
   if (!accountId) {
@@ -111,6 +111,7 @@ app.post("/api/get-kontonummer", express.json(), async (req, res) => {
 
   try {
     const kontoNummer = await fetchAccount(accountId);
+    console.log("BACKEND Fetched Konto_Nummer1:", kontoNummer);
 
     if (!kontoNummer) {
       return res.status(404).json({ error: "Account not found or Konto_Nummer1 is empty" });
@@ -118,7 +119,7 @@ app.post("/api/get-kontonummer", express.json(), async (req, res) => {
 
     res.json({ kontoNummer });
   } catch (error) {
-    console.error("Error fetching account:", error);
+    console.error("BACKEND Error fetching account:", error);
     res.status(500).json({ error: "Failed to fetch account data" });
   }
 });

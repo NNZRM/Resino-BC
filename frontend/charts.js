@@ -48,7 +48,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
   document.getElementById("charts-header").textContent = `Business Central Graph (ID: ${accountId})`;
 
   // Fetch KontoNummer from backend
-  fetch("http://localhost:8000/api/get-kontonummer", {
+  fetch("/get-kontonummer", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
