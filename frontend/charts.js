@@ -39,36 +39,36 @@ function chartsShowError(message) {
 
 console.log("YOOOOOO");
 
-ZOHO.embeddedApp.init().then(() => {
-  ZOHO.embeddedApp.on("PageLoad", async function(data) {
-    console.log("🔍 PageLoad data from Zoho CRM:", data);
+// ✅ Attach listener first
+ZOHO.embeddedApp.on("PageLoad", function(data) {
+  console.log("🔍 PageLoad data from Zoho CRM:", data);
 
-    const accountId = data.EntityId;
-    document.getElementById("charts-header").textContent = `Business Central Graph (ID: ${accountId})`;
+  const accountId = data.EntityId;
+  document.getElementById("charts-header").textContent = `Business Central Graph (ID: ${accountId})`;
 
-    try {
-      const baseUrl = window.location.origin;
-      const res = await fetch(`${baseUrl}/get-kontonummer`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ accountId })
-      });
-
-      const result = await res.json();
-      console.log("KontoNummer received:", result.kontoNummer);
+  fetch("/get-kontonummer", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ accountId })
+  })
+    .then(res => res.json())
+    .then(data => {
+      console.log("✅ KontoNummer received:", data.kontoNummer);
 
       const testData = {
-        label: `Konto ${result.kontoNummer} Sales`,
+        label: `Konto ${data.kontoNummer} Sales`,
         labels: ["Jan", "Feb", "Mar", "Apr"],
         values: [100, 200, 150, 180]
       };
 
       chartsRenderChart(testData);
-    } catch (err) {
-      console.error("Fetch error:", err);
+    })
+    .catch(err => {
+      console.error("❌ Fetch error:", err);
       chartsShowError("Could not fetch account details.");
-    }
-  });
+    });
 });
+
+ZOHO.embeddedApp.init();
