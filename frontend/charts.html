@@ -21,8 +21,8 @@
   </style>
 </head>
 <body>
-  <h2>Customer Activity Graph</h2>
-  <div id="loading">Loading graph...</div>
+  <h2 id="header">Customer Activity Graph</h2>
+  <div id="loading">Loading...</div>
   <canvas id="myChart" style="display: none;"></canvas>
 
   <script>
@@ -61,30 +61,33 @@
       document.getElementById("myChart").style.display = "block";
     }
 
-    //Test data
-    const testData = {
-      label: "Sales Over Time",
-      labels: ["Jan", "Feb", "Mar", "Apr"],
-      values: [120, 140, 180, 200]
-    };
+    function showError(message) {
+      document.getElementById("loading").textContent = "⚠️ " + message;
+    }
 
-    renderChart(testData);
-
-    //Zoho CRM integration
-    /*
     ZOHO.embeddedApp.on("PageLoad", function(data) {
       const accountId = data.EntityId;
-      fetch(`/api/graph-data?accountId=${accountId}`)
-        .then(res => {
-          if (!res.ok) throw new Error("Could not load data.");
-          return res.json();
-        })
-        .then(renderChart)
-        .catch(err => showError(err.message));
+
+      // TEST CRM PAGE LOAD
+      document.getElementById("header").textContent = `Customer Activity Graph (ID: ${accountId})`;
+
+      // tEST DATA  
+      const testData = {
+        label: "Sales Over Time",
+        labels: ["Jan", "Feb", "Mar", "Apr"],
+        values: [120, 140, 180, 200]
+      };
+
+      renderChart(testData);
+
+      // Later you can switch to real fetch:
+      // fetch(`/api/graph-data?accountId=${accountId}`)
+      //   .then(res => res.json())
+      //   .then(renderChart)
+      //   .catch(err => showError(err.message));
     });
 
     ZOHO.embeddedApp.init();
-    */
   </script>
 </body>
 </html>
