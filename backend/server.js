@@ -104,9 +104,6 @@ app.post("/upload", upload.array("files"), async (req, res) => {
   }
 });
 
-// Endpoint to fetch Konto_Nummer1 from Zoho
-import { fetchAccount } from './zoho.js';
-
 app.post("/get-kontonummer", express.json(), async (req, res) => {
   const { accountId } = req.body;
 

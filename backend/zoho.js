@@ -1,6 +1,8 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
+export { fetchAccount };
+
 
 dotenv.config();
 
