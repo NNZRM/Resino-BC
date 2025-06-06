@@ -8,7 +8,7 @@ function chartsRenderChart(data) {
       labels: data.labels,
       datasets: [
         {
-          label: data.label || "Current Year",
+          label: "Current Year",
           data: data.values,
           borderColor: "blue",
           backgroundColor: "lightblue",
@@ -79,9 +79,9 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
           }
 
           chartsRenderChart({
-            label: `Konto ${data.kontoNummer} Revenue`,
             labels: chartData.labels,
-            values: chartData.values
+            values: chartData.values,
+            valuesLastYear: chartData.valuesLastYear
           });
         })
         .catch(err => {
