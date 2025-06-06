@@ -12,6 +12,7 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const ENV_PATH = '.env';
 
+// Refresh the access token if its expired
 async function refreshAccessToken() {
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -45,6 +46,7 @@ async function refreshAccessToken() {
   }
 }
 
+//Fetch account "Konto Nummer" from Zoho CRM
 async function fetchAccount(id) {
   try {
     const response = await axios.get(`https://www.zohoapis.eu/crm/v8/Accounts/${id}`, {

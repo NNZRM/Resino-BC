@@ -11,16 +11,17 @@ dotenv.config();
 const app = express();
 const port = 8000;
 
-// CORS configuration
+//CORS config
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
-//Store uploads in memory
+
+//Store uploads in memory - 10 MB
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 },
 });
 
 app.use((req, res, next) => {
@@ -41,7 +42,7 @@ const allowedMimeTypes = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ];
 
-// Endpoint to handle file uploads
+//Endpoint to handle file uploads
 app.post("/upload", upload.array("files"), async (req, res) => {
   const sftp = new SFTPClient();
   const now = new Date();
@@ -54,49 +55,38 @@ app.post("/upload", upload.array("files"), async (req, res) => {
   try {
     await sftp.connect(sftpConfig);
 
-    // Ensure year/month folders exist
+    // Ensure folders exist
     try { await sftp.mkdir(`/root/uploads/${year}`, true); } catch (e) {}
     try { await sftp.mkdir(remoteBasePath, true); } catch (e) {}
 
     const uploadedFiles = [];
 
-    for (const file of req.files) {
+    const types = req.body.types; // Should align index-wise with files
+    const typeArray = Array.isArray(types) ? types : [types]; // Handle single vs multi
+
+    for (let i = 0; i < req.files.length; i++) {
+      const file = req.files[i];
+      const fileType = typeArray[i];
+
       if (!allowedMimeTypes.includes(file.mimetype)) continue;
 
-      const ext = path.extname(file.originalname);
-      const baseName = path.basename(file.originalname, ext);
+      const newFileName = file.originalname;
+      const typeFolder = fileType === "budget" ? "budget" : "bcdata";
+      const remotePath = `${remoteBasePath}/${typeFolder}/${newFileName}`;
 
-      // Timestamp in Danish format
-      const formatter = new Intl.DateTimeFormat("da-DK", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-        timeZone: "Europe/Copenhagen"
-      });
+      // Ensure type folder exists
+      try { await sftp.mkdir(`${remoteBasePath}/${typeFolder}`, true); } catch (e) {}
 
-      const parts = formatter.formatToParts(new Date()).reduce((acc, part) => {
-        acc[part.type] = part.value;
-        return acc;
-      }, {});
-
-      const timestamp = `${parts.year}-${parts.month}-${parts.day}_${parts.hour}-${parts.minute}-${parts.second}`;
-      const newFileName = `${baseName}_${timestamp}${ext}`;
-      const remotePath = `${remoteBasePath}/${newFileName}`;
-
-      console.log(`Uploading ${newFileName}`);
+      console.log(`Uploading ${newFileName} to ${typeFolder}`);
       await sftp.put(Buffer.from(file.buffer), remotePath);
-      uploadedFiles.push(newFileName);
+      uploadedFiles.push({ file: newFileName, type: fileType });
     }
 
     await sftp.end();
 
     res.status(200).json({
-      message: "Filer uploadet korrekt",
-      files: uploadedFiles
+      message: "Filer uploadet korrekt og kategoriseret",
+      files: uploadedFiles,
     });
   } catch (err) {
     console.error("Upload failed:", err);
@@ -104,6 +94,7 @@ app.post("/upload", upload.array("files"), async (req, res) => {
   }
 });
 
+//Endpoint to fetch Konto_Nummer1 from Zoho CRM
 app.post("/get-kontonummer", express.json(), async (req, res) => {
   const { accountId } = req.body;
 

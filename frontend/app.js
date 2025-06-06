@@ -18,13 +18,8 @@ function uploadFiles() {
   messageBox.classList.add("d-none");
   messageBox.textContent = "";
 
-  const fileInputA = document.getElementById("fileA");
-  const fileInputB = document.getElementById("fileB");
-
-  if (fileInputA.files.length === 0 && fileInputB.files.length === 0) {
-    showMessage("Please choose one or more files to upload.", "danger");
-    return;
-  }
+  const fileInputA = document.getElementById("fileA"); // BC data
+  const fileInputB = document.getElementById("fileB"); // Budget
 
   const formData = new FormData();
   const allowedTypes = [
@@ -33,12 +28,16 @@ function uploadFiles() {
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   ];
 
+  let hasFiles = false;
+
   for (const file of fileInputA.files) {
     if (!allowedTypes.includes(file.type)) {
       showMessage("Invalid file in BC data udtræk. Only CSV or XLSX allowed.", "danger");
       return;
     }
     formData.append("files", file);
+    formData.append("types", "bcdata");
+    hasFiles = true;
   }
 
   for (const file of fileInputB.files) {
@@ -47,24 +46,36 @@ function uploadFiles() {
       return;
     }
     formData.append("files", file);
+    formData.append("types", "budget");
+    hasFiles = true;
+  }
+
+  if (!hasFiles) {
+    showMessage("Please choose one or more files to upload.", "danger");
+    return;
   }
 
   fetch("/upload", {
-  method: "POST",
-  body: formData,
-})
-  .then(response => response.json())
-  .then(data => {
-    showMessage("Files uploaded successfully!", "success");
-    const successModal = new bootstrap.Modal(document.getElementById("successModal"));
-    successModal.show();
+    method: "POST",
+    body: formData,
   })
-  .catch(error => {
-    console.error(error);
-    showMessage("Failed to upload files. Please try again.", "danger");
-  });
-
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+      return response.json();
+    })
+    .then(data => {
+      showMessage("Files uploaded successfully!", "success");
+      const successModal = new bootstrap.Modal(document.getElementById("successModal"));
+      successModal.show();
+    })
+    .catch(error => {
+      console.error("Upload error:", error);
+      showMessage("Failed to upload files. Please try again.", "danger");
+    });
 }
+
 
 function showMessage(text, type) {
   const messageBox = document.getElementById("message");

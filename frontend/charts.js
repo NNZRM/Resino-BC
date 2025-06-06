@@ -1,3 +1,4 @@
+// Render chart using Chart.js
 function chartsRenderChart(data) {
   const ctx = document.getElementById("charts-myChart").getContext("2d");
 
@@ -37,8 +38,7 @@ function chartsShowError(message) {
   document.getElementById("charts-loading").textContent = "⚠️ " + message;
 }
 
-console.log("YOOOOOO");
-
+// Retrieve KontoNummer from Zoho CRM when the page loads and render the chart with the data
 ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("🔍 PageLoad data from Zoho CRM:", data);
 
@@ -56,6 +56,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
     .then(data => {
       console.log("KontoNummer received:", data.kontoNummer);
 
+      // Use "Konto Nummer" to fetch chart data from SFTP server
       const testData = {
         label: `Konto ${data.kontoNummer} Sales`,
         labels: ["Jan", "Feb", "Mar", "Apr"],
