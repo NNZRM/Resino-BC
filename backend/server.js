@@ -165,9 +165,10 @@ app.get("/get-chart-data", async (req, res) => {
           const annualRevenue = parseFloat(row["Annual Revenue"]);
           console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
           await sftp.end();
+          const monthlyStep = annualRevenue / monthOrder.length;
           return res.json({
             labels: monthOrder,
-            values: monthOrder.map(() => annualRevenue)
+            values: monthOrder.map((_, i) => monthlyStep * (i + 1))
           });
         }
       }
@@ -185,9 +186,10 @@ app.get("/get-chart-data", async (req, res) => {
           const annualRevenue = parseFloat(row["Annual Revenue"]);
           console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
           await sftp.end();
+          const monthlyStep = annualRevenue / monthOrder.length;
           return res.json({
             labels: monthOrder,
-            values: monthOrder.map(() => annualRevenue)
+            values: monthOrder.map((_, i) => monthlyStep * (i + 1))
           });
         }
       }
