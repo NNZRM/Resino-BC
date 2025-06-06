@@ -5,6 +5,10 @@ import path from "path";
 import dotenv from "dotenv";
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
+import csv from "csv-parser";
+import xlsx from "xlsx";
+import stream from "stream";
+
 
 dotenv.config();
 
@@ -114,6 +118,78 @@ app.post("/get-kontonummer", express.json(), async (req, res) => {
   } catch (error) {
     console.error("BACKEND Error fetching account:", error);
     res.status(500).json({ error: "Failed to fetch account data" });
+  }
+});
+
+
+//Get chart data for a specific Konto
+app.get("/get-chart-data", async (req, res) => {
+  const konto = req.query.konto;
+  if (!konto) return res.status(400).json({ error: "Missing konto parameter" });
+
+  const sftp = new SFTPClient();
+  const bcDataDir = `/root/uploads/2025/2025-06/bcdata`;
+
+  try {
+    await sftp.connect(sftpConfig);
+
+    // Get list of files and pick the most recently modified one
+    const files = await sftp.list(bcDataDir);
+    const targetFile = files
+      .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
+      .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
+
+    if (!targetFile) {
+      await sftp.end();
+      return res.status(404).json({ error: "No file found in bcdata folder." });
+    }
+
+    const fullPath = path.join(bcDataDir, targetFile.name);
+    const fileContent = await sftp.get(fullPath);
+
+    const monthlyData = {};
+
+    if (targetFile.name.endsWith(".csv")) {
+      const parser = fileContent.pipe(csv({ separator: ";" }));
+      for await (const row of parser) {
+        if (row["Account no."] === konto && row["Annual Revenue"]) {
+          const month = row["Month"] || "Unknown"; // Replace if needed
+          const revenue = parseFloat(row["Annual Revenue"]);
+          if (!monthlyData[month]) monthlyData[month] = 0;
+          monthlyData[month] += revenue;
+        }
+      }
+    } else if (targetFile.name.endsWith(".xlsx")) {
+      const workbook = xlsx.read(fileContent, { type: "buffer" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+
+      for (const row of rows) {
+        if (row["Account no."] === konto && row["Annual Revenue"]) {
+          const month = row["Month"] || "Unknown"; // Replace if needed
+          const revenue = parseFloat(row["Annual Revenue"]);
+          if (!monthlyData[month]) monthlyData[month] = 0;
+          monthlyData[month] += revenue;
+        }
+      }
+    }
+
+    await sftp.end();
+
+    const monthOrder = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    const sorted = monthOrder.filter(m => monthlyData[m]);
+    res.json({
+      labels: sorted,
+      values: sorted.map(m => monthlyData[m])
+    });
+
+  } catch (error) {
+    console.error("Chart generation failed:", error);
+    res.status(500).json({ error: "Could not generate chart data" });
   }
 });
 

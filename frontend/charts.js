@@ -38,7 +38,7 @@ function chartsShowError(message) {
   document.getElementById("charts-loading").textContent = "⚠️ " + message;
 }
 
-// Retrieve KontoNummer from Zoho CRM when the page loads and render the chart with the data
+// Retrieve KontoNummer from Zoho CRM when the page loads and render charts
 ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("🔍 PageLoad data from Zoho CRM:", data);
 
@@ -57,13 +57,26 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
       console.log("KontoNummer received:", data.kontoNummer);
 
       // Use "Konto Nummer" to fetch chart data from SFTP server
-      const testData = {
-        label: `Konto ${data.kontoNummer} Sales`,
-        labels: ["Jan", "Feb", "Mar", "Apr"],
-        values: [100, 200, 150, 180]
-      };
+      fetch(`/get-chart-data?konto=${data.kontoNummer}`)
+        .then(res => res.json())
+        .then(chartData => {
+          console.log("Chart data received:", chartData); 
 
-      chartsRenderChart(testData);
+          if (!chartData || !chartData.labels) {
+            chartsShowError("No chart data found.");
+            return;
+          }
+
+          chartsRenderChart({
+            label: `Konto ${data.kontoNummer} Revenue`,
+            labels: chartData.labels,
+            values: chartData.values
+          });
+        })
+        .catch(err => {
+          console.error("Chart fetch error:", err);
+          chartsShowError("Could not load chart data.");
+        });
     })
     .catch(err => {
       console.error("Fetch error:", err);
