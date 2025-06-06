@@ -133,7 +133,7 @@ app.get("/get-chart-data", async (req, res) => {
   try {
     await sftp.connect(sftpConfig);
 
-    // Get list of files and pick the most recently modified one
+    // Find most recent file
     const files = await sftp.list(bcDataDir);
     const targetFile = files
       .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
@@ -144,55 +144,63 @@ app.get("/get-chart-data", async (req, res) => {
       return res.status(404).json({ error: "No file found in bcdata folder." });
     }
 
-    const fullPath = path.join(bcDataDir, targetFile.name);
-    const fileContent = await sftp.get(fullPath);
-
-    const monthlyData = {};
-
-    if (targetFile.name.endsWith(".csv")) {
-      const parser = fileContent.pipe(csv({ separator: ";" }));
-      for await (const row of parser) {
-        if (row["Account no."] === konto && row["Annual Revenue"]) {
-          const month = row["Month"] || "Unknown"; // Replace if needed
-          const revenue = parseFloat(row["Annual Revenue"]);
-          if (!monthlyData[month]) monthlyData[month] = 0;
-          monthlyData[month] += revenue;
-        }
-      }
-    } else if (targetFile.name.endsWith(".xlsx")) {
-      const workbook = xlsx.read(fileContent, { type: "buffer" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
-
-      for (const row of rows) {
-        if (row["Account no."] === konto && row["Annual Revenue"]) {
-          const month = row["Month"] || "Unknown"; // Replace if needed
-          const revenue = parseFloat(row["Annual Revenue"]);
-          if (!monthlyData[month]) monthlyData[month] = 0;
-          monthlyData[month] += revenue;
-        }
-      }
-    }
-
-    await sftp.end();
-
+    console.log(`Found target file: ${targetFile.name}`);
+    const fullPath = `${bcDataDir}/${targetFile.name}`;
     const monthOrder = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
 
-    const sorted = monthOrder.filter(m => monthlyData[m]);
-    res.json({
-      labels: sorted,
-      values: sorted.map(m => monthlyData[m])
-    });
+    // === CSV ===
+    if (targetFile.name.endsWith(".csv")) {
+      const fileBuffer = await sftp.get(fullPath); // get as buffer
+      const readable = new stream.Readable();
+      readable._read = () => {};
+      readable.push(fileBuffer);
+      readable.push(null);
+
+      const parser = readable.pipe(csv({ separator: ";" }));
+      for await (const row of parser) {
+        if (row["Account no."] === konto && row["Annual Revenue"]) {
+          const annualRevenue = parseFloat(row["Annual Revenue"]);
+          console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
+          await sftp.end();
+          return res.json({
+            labels: monthOrder,
+            values: monthOrder.map(() => annualRevenue)
+          });
+        }
+      }
+    }
+
+    // === XLSX ===
+    else if (targetFile.name.endsWith(".xlsx")) {
+      const fileBuffer = await sftp.get(fullPath);
+      const workbook = xlsx.read(fileBuffer, { type: "buffer" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
+
+      for (const row of rows) {
+        if (row["Account no."] === konto && row["Annual Revenue"]) {
+          const annualRevenue = parseFloat(row["Annual Revenue"]);
+          console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
+          await sftp.end();
+          return res.json({
+            labels: monthOrder,
+            values: monthOrder.map(() => annualRevenue)
+          });
+        }
+      }
+    }
+
+    await sftp.end();
+    return res.status(404).json({ error: "No matching account found in data file." });
 
   } catch (error) {
     console.error("Chart generation failed:", error);
     res.status(500).json({ error: "Could not generate chart data" });
   }
 });
-
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
