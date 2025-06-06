@@ -128,6 +128,10 @@ async function getBudgetData(konto, budgetDir) {
     }
 
     await sftp.end();
+    // Cumulative the monthly budget
+    for (let i = 1; i < monthlyBudget.length; i++) {
+    monthlyBudget[i] += monthlyBudget[i - 1];
+    }
     return monthlyBudget;
   } catch (err) {
     await sftp.end();
