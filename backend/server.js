@@ -148,12 +148,12 @@ app.get("/get-chart-data", async (req, res) => {
     const fullPath = `${bcDataDir}/${targetFile.name}`;
     const monthOrder = [
       "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "July", "August", "September", "October", "November", "December", "January"
     ];
 
-    // === CSV ===
+    //CSV
     if (targetFile.name.endsWith(".csv")) {
-      const fileBuffer = await sftp.get(fullPath); // get as buffer
+      const fileBuffer = await sftp.get(fullPath);
       const readable = new stream.Readable();
       readable._read = () => {};
       readable.push(fileBuffer);
@@ -163,18 +163,25 @@ app.get("/get-chart-data", async (req, res) => {
       for await (const row of parser) {
         if (row["Account no."] === konto && row["Annual Revenue"]) {
           const annualRevenue = parseFloat(row["Annual Revenue"]);
+          const lastYearRevenue = parseFloat(row["Last years revenue"]);
           console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
+          console.log(`Found account ${konto} with last year's revenue: ${lastYearRevenue}`);
           await sftp.end();
+
           const monthlyStep = annualRevenue / monthOrder.length;
+          const monthlyStepLast = lastYearRevenue / monthOrder.length;
+
           return res.json({
             labels: monthOrder,
-            values: monthOrder.map((_, i) => monthlyStep * (i + 1))
+            values: monthOrder.map((_, i) => monthlyStep * (i + 1)),
+            valuesLastYear: monthOrder.map((_, i) => monthlyStepLast * (i + 1))
           });
         }
       }
     }
 
-    // === XLSX ===
+
+    //XLSX
     else if (targetFile.name.endsWith(".xlsx")) {
       const fileBuffer = await sftp.get(fullPath);
       const workbook = xlsx.read(fileBuffer, { type: "buffer" });
@@ -184,12 +191,18 @@ app.get("/get-chart-data", async (req, res) => {
       for (const row of rows) {
         if (row["Account no."] === konto && row["Annual Revenue"]) {
           const annualRevenue = parseFloat(row["Annual Revenue"]);
+          const lastYearRevenue = parseFloat(row["Last years revenue"]);
+          console.log(`Found account ${konto} with annual revenue: ${lastYearRevenue}`);
           console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
           await sftp.end();
-          const monthlyStep = annualRevenue / monthOrder.length;
+
+          const monthlyAnnualStep = annualRevenue / monthOrder.length;
+          const monthlyStepLast = lastYearRevenue / monthOrder.length;
+
           return res.json({
             labels: monthOrder,
-            values: monthOrder.map((_, i) => monthlyStep * (i + 1))
+            values: monthOrder.map((_, i) => monthlyAnnualStep * (i + 1)),
+            valuesLastYear: monthOrder.map((_, i) => monthlyStepLast * (i + 1))
           });
         }
       }

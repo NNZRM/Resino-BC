@@ -6,14 +6,24 @@ function chartsRenderChart(data) {
     type: "line",
     data: {
       labels: data.labels,
-      datasets: [{
-        label: data.label || "Activity",
-        data: data.values,
-        borderColor: "blue",
-        backgroundColor: "lightblue",
-        fill: false,
-        tension: 0.2
-      }]
+      datasets: [
+        {
+          label: data.label || "Current Year",
+          data: data.values,
+          borderColor: "blue",
+          backgroundColor: "lightblue",
+          fill: false,
+          tension: 0.2
+        },
+        {
+          label: "Last Year",
+          data: data.valuesLastYear,
+          borderColor: "gray",
+          backgroundColor: "lightgray",
+          fill: false,
+          tension: 0.2
+        }
+      ]
     },
     options: {
       responsive: true,
@@ -33,6 +43,7 @@ function chartsRenderChart(data) {
   document.getElementById("charts-loading").style.display = "none";
   document.getElementById("charts-myChart").style.display = "block";
 }
+
 
 function chartsShowError(message) {
   document.getElementById("charts-loading").textContent = "⚠️ " + message;
