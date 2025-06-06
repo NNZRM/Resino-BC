@@ -5,6 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
+import { extractChartData } from "./chartData.js";
 import csv from "csv-parser";
 import xlsx from "xlsx";
 import stream from "stream";
@@ -127,93 +128,13 @@ app.get("/get-chart-data", async (req, res) => {
   const konto = req.query.konto;
   if (!konto) return res.status(400).json({ error: "Missing konto parameter" });
 
-  const sftp = new SFTPClient();
-  const bcDataDir = `/root/uploads/2025/2025-06/bcdata`;
-
   try {
-    await sftp.connect(sftpConfig);
-
-    // Find most recent file
-    const files = await sftp.list(bcDataDir);
-    const targetFile = files
-      .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
-      .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
-
-    if (!targetFile) {
-      await sftp.end();
-      return res.status(404).json({ error: "No file found in bcdata folder." });
-    }
-
-    console.log(`Found target file: ${targetFile.name}`);
-    const fullPath = `${bcDataDir}/${targetFile.name}`;
-    const monthOrder = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December", "January"
-    ];
-
-    //CSV
-    if (targetFile.name.endsWith(".csv")) {
-      const fileBuffer = await sftp.get(fullPath);
-      const readable = new stream.Readable();
-      readable._read = () => {};
-      readable.push(fileBuffer);
-      readable.push(null);
-
-      const parser = readable.pipe(csv({ separator: ";" }));
-      for await (const row of parser) {
-        if (row["Account no."] === konto && row["Annual Revenue"]) {
-          const annualRevenue = parseFloat(row["Annual Revenue"]);
-          const lastYearRevenue = parseFloat(row["Last years revenue"]);
-          console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
-          console.log(`Found account ${konto} with last year's revenue: ${lastYearRevenue}`);
-          await sftp.end();
-
-          const monthlyStep = annualRevenue / monthOrder.length;
-          const monthlyStepLast = lastYearRevenue / monthOrder.length;
-
-          return res.json({
-            labels: monthOrder,
-            values: monthOrder.map((_, i) => monthlyStep * (i + 1)),
-            valuesLastYear: monthOrder.map((_, i) => monthlyStepLast * (i + 1))
-          });
-        }
-      }
-    }
-
-
-    //XLSX
-    else if (targetFile.name.endsWith(".xlsx")) {
-      const fileBuffer = await sftp.get(fullPath);
-      const workbook = xlsx.read(fileBuffer, { type: "buffer" });
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      const rows = xlsx.utils.sheet_to_json(sheet, { defval: "" });
-
-      for (const row of rows) {
-        if (row["Account no."] === konto && row["Annual Revenue"]) {
-          const annualRevenue = parseFloat(row["Annual Revenue"]);
-          const lastYearRevenue = parseFloat(row["Last years revenue"]);
-          console.log(`Found account ${konto} with annual revenue: ${lastYearRevenue}`);
-          console.log(`Found account ${konto} with annual revenue: ${annualRevenue}`);
-          await sftp.end();
-
-          const monthlyAnnualStep = annualRevenue / monthOrder.length;
-          const monthlyStepLast = lastYearRevenue / monthOrder.length;
-
-          return res.json({
-            labels: monthOrder,
-            values: monthOrder.map((_, i) => monthlyAnnualStep * (i + 1)),
-            valuesLastYear: monthOrder.map((_, i) => monthlyStepLast * (i + 1))
-          });
-        }
-      }
-    }
-
-    await sftp.end();
-    return res.status(404).json({ error: "No matching account found in data file." });
-
+    const bcDataDir = `/root/uploads/2025/2025-06/bcdata`;
+    const budgetDir = `/root/uploads/2025/2025-06/budget`;
+    const data = await extractChartData(konto, bcDataDir, budgetDir);
+    res.json(data);
   } catch (error) {
-    console.error("Chart generation failed:", error);
-    res.status(500).json({ error: "Could not generate chart data" });
+    res.status(500).json({ error: error.message || "Could not generate chart data" });
   }
 });
 
