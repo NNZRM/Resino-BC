@@ -103,7 +103,7 @@ async function getBudgetData(konto, budgetDir) {
   try {
     await sftp.connect(sftpConfig);
     const budgetFiles = await sftp.list(budgetDir);
-    const currentYear = new Date().getFullYear();
+    const currentYear = 2023;//new Date().getFullYear();
     const monthlyBudget = Array(12).fill(0);
 
     for (const file of budgetFiles) {
