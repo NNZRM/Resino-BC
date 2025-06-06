@@ -1,4 +1,4 @@
-// Render chart using Chart.js
+//BC data chart
 function chartsRenderChart(data) {
   const ctx = document.getElementById("charts-myChart").getContext("2d");
 
@@ -22,6 +22,14 @@ function chartsRenderChart(data) {
           backgroundColor: "lightgray",
           fill: false,
           tension: 0.2
+        },
+        {
+          label: "Budget",
+          data: data.valuesBudget,
+          borderColor: "green",
+          backgroundColor: "lightgreen",
+          fill: false,
+          tension: 0.2
         }
       ]
     },
@@ -43,6 +51,7 @@ function chartsRenderChart(data) {
   document.getElementById("charts-loading").style.display = "none";
   document.getElementById("charts-myChart").style.display = "block";
 }
+
 
 
 function chartsShowError(message) {
@@ -81,7 +90,8 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
           chartsRenderChart({
             labels: chartData.labels,
             values: chartData.values,
-            valuesLastYear: chartData.valuesLastYear
+            valuesLastYear: chartData.valuesLastYear,
+            valuesBudget: chartData.valuesBudget
           });
         })
         .catch(err => {

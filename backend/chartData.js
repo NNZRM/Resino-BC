@@ -23,7 +23,7 @@ export async function extractChartData(konto, bcDataDir, budgetDir) {
   const budgetData = await getBudgetData(konto, budgetDir);
   return {
     ...bcData,
-    pvaluesBudget: budgetData
+    valuesBudget: budgetData
   };
 }
 
