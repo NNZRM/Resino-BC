@@ -6,10 +6,6 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from "./chartData.js";
-import csv from "csv-parser";
-import xlsx from "xlsx";
-import stream from "stream";
-
 
 dotenv.config();
 
