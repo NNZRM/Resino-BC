@@ -8,14 +8,16 @@
   <script src="https://live.zwidgets.com/js-sdk/1.2/ZohoEmbededAppSDK.min.js"></script>
 </head>
 <body>
-  <h2 id="charts-header">Business Central Graph</h2>
-  <div id="charts-loading">Loading...</div>
+  <h2 id="charts-header" style="text-align: center;" >Business Central Graph</h2>
+  <div id="charts-loading" style="text-align: center;" >Loading...</div>
 
   <div style="display: flex; gap: 2rem; justify-content: center;">
-    <div style="width: 800px;">
-      <canvas id="charts-myChart"></canvas>
+    <div class="chart-wrapper">
+      <h3>Revenue</h3>
+      <canvas id="charts-revenueChart"></canvas>
     </div>
-    <div style="width: 800px;">
+    <div class="chart-wrapper">
+      <h3>Volume</h3>
       <canvas id="charts-budgetChart"></canvas>
     </div>
   </div>

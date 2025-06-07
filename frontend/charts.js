@@ -1,6 +1,6 @@
 function chartsRenderChart(data) {
   // Revenue Chart
-  const ctx = document.getElementById("charts-myChart").getContext("2d");
+  const ctx = document.getElementById("charts-revenueChart").getContext("2d");
   new Chart(ctx, {
     type: "line",
     data: {
@@ -80,7 +80,7 @@ function chartsRenderChart(data) {
   });
 
   document.getElementById("charts-loading").style.display = "none";
-  document.getElementById("charts-myChart").style.display = "block";
+  document.getElementById("charts-revenueChart").style.display = "block";
   document.getElementById("charts-budgetChart").style.display = "block";
 }
 
@@ -93,7 +93,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("PageLoad data from Zoho CRM:", data);
 
   const accountId = data.EntityId;
-  document.getElementById("charts-header").textContent = `Revenue Chart (Budget Shows 2023, data had no 2025)`;
+  document.getElementById("charts-header").textContent = `Business Central Charts (Budget Shows 2023, data had no 2025)`;
 
   fetch("/get-kontonummer", {
     method: "POST",
