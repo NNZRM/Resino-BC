@@ -87,16 +87,21 @@ function uploadFiles() {
       fileInputA.value = "";
       fileInputB.value = "";
     })
-    .catch(error => {
+    .catch(async error => {
       console.error("Upload error:", error);
-      if (error.message.includes("413") || error.message.includes("too large")) {
-        showMessage("The file is too large. Maximum file size is 10 MB.", "danger");
+
+      // Try to get the real error response if any
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        showMessage("The file is too large. Maximum allowed size is 10 MB.", "danger");
+      } else if (error.message.includes("413") || error.message.includes("too large")) {
+        showMessage("The file is too large. Maximum allowed size is 10 MB.", "danger");
       } else if (error.message.includes("Upload failed")) {
         showMessage("Upload failed. Please check the file format and try again.", "danger");
       } else {
         showMessage("Something went wrong. Please try again later.", "danger");
       }
     });
+
 }
 
 
