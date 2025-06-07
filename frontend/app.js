@@ -15,6 +15,11 @@ function loadComponent(file, containerId, callback) {
     .catch(err => console.error(`Failed to load ${file}:`, err));
 }
 
+//
+function removeFile(inputId) {
+    const input = document.getElementById(inputId);
+    input.value = "";
+  }
 
 function uploadFiles() {
   const messageBox = document.getElementById("message");
@@ -78,6 +83,9 @@ function uploadFiles() {
       showMessage("Files uploaded successfully!", "success");
       const successModal = new bootstrap.Modal(document.getElementById("successModal"));
       successModal.show();
+
+      fileInputA.value = "";
+      fileInputB.value = "";
     })
     .catch(error => {
       console.error("Upload error:", error);
