@@ -53,27 +53,24 @@ const allowedMimeTypes = [
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 ];
 
-//Endpoint to handle file uploads
+// Endpoint to handle file uploads
 app.post("/upload", authenticateToken, upload.array("files"), async (req, res) => {
   const sftp = new SFTPClient();
-  const now = new Date();
-
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const folderName = `${year}/${year}-${month}`;
-  const remoteBasePath = `/root/uploads/${folderName}`;
+  const remoteBasePath = `/root/uploads/resino`;
 
   try {
     await sftp.connect(sftpConfig);
 
-    // Ensure folders exist
-    try { await sftp.mkdir(`/root/uploads/${year}`, true); } catch (e) {}
+    // Ensure base folder exists
     try { await sftp.mkdir(remoteBasePath, true); } catch (e) {}
 
     const uploadedFiles = [];
 
-    const types = req.body.types; // Should align index-wise with files
-    const typeArray = Array.isArray(types) ? types : [types]; // Handle single vs multi
+    const types = req.body.types;
+    const typeArray = Array.isArray(types) ? types : [types];
+
+    // Track which folders we've already cleaned
+    const cleanedFolders = new Set();
 
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];
@@ -81,29 +78,50 @@ app.post("/upload", authenticateToken, upload.array("files"), async (req, res) =
 
       if (!allowedMimeTypes.includes(file.mimetype)) continue;
 
-      const newFileName = file.originalname;
       const typeFolder = fileType === "budget" ? "budget" : "bcdata";
-      const remotePath = `${remoteBasePath}/${typeFolder}/${newFileName}`;
+      const folderPath = `${remoteBasePath}/${typeFolder}`;
+      const newFileName = file.originalname;
+      const remotePath = `${folderPath}/${newFileName}`;
 
       // Ensure type folder exists
-      try { await sftp.mkdir(`${remoteBasePath}/${typeFolder}`, true); } catch (e) {}
+      try { await sftp.mkdir(folderPath, true); } catch (e) {}
 
+      // Only clean the folder once per type
+      if (!cleanedFolders.has(typeFolder)) {
+        try {
+          const existingFiles = await sftp.list(folderPath);
+          for (const f of existingFiles) {
+            if (f.name.endsWith(".csv") || f.name.endsWith(".xlsx")) {
+              await sftp.delete(`${folderPath}/${f.name}`);
+              console.log(`Deleted old file: ${folderPath}/${f.name}`);
+            }
+          }
+        } catch (err) {
+          console.error(`Error cleaning ${typeFolder} folder:`, err);
+          throw err;
+        }
+
+        cleanedFolders.add(typeFolder);
+      }
+
+      // Upload file
       console.log(`Uploading ${newFileName} to ${typeFolder}`);
-      await sftp.put(Buffer.from(file.buffer), remotePath);
+      await sftp.put(file.buffer, remotePath);
       uploadedFiles.push({ file: newFileName, type: fileType });
     }
 
     await sftp.end();
 
     res.status(200).json({
-      message: "Filer uploadet korrekt og kategoriseret",
+      message: "Files were uploaded correctly",
       files: uploadedFiles,
     });
   } catch (err) {
     console.error("Upload failed:", err);
-    res.status(500).json({ error: "Upload mislykkedes" });
+    res.status(500).json({ error: "Upload failed" });
   }
 });
+
 
 //Endpoint to fetch Konto_Nummer1 from Zoho CRM
 app.post("/get-kontonummer", express.json(), async (req, res) => {
@@ -135,8 +153,8 @@ app.get("/get-chart-data", async (req, res) => {
   if (!konto) return res.status(400).json({ error: "Missing konto parameter" });
 
   try {
-    const bcDataDir = `/root/uploads/2025/2025-06/bcdata`;
-    const budgetDir = `/root/uploads/2025/2025-06/budget`;
+    const bcDataDir = `/root/uploads/resino/bcdata`;
+    const budgetDir = `/root/uploads/resino/budget`;
     const data = await extractChartData(konto, bcDataDir, budgetDir);
     res.json(data);
   } catch (error) {
