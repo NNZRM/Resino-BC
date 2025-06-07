@@ -34,17 +34,38 @@ export function authenticateToken(req, res, next) {
 
 // login endpoint - verifies user credentials and returns a JWT token
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+  console.log('📥 Login request received:', req.body);
 
-  if (rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: "Missing username or password" });
+    }
 
-  const user = rows[0];
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+    const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
+    console.log('🧑‍💻 Matching user(s):', rows);
 
-  const token = jwt.sign({ id: user.id, username: user.username }, jwtSecret, { expiresIn: '1h' });
-  res.json({ token });
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials (user not found)' });
+    }
+
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    console.log('🔒 Password match?', match);
+
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid credentials (wrong password)' });
+    }
+
+    const token = jwt.sign({ id: user.id, username: user.username }, jwtSecret, { expiresIn: '1h' });
+    console.log('✅ JWT token generated:', token);
+
+    res.json({ token });
+  } catch (err) {
+    console.error('❌ Login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
+
 
 export default router;
