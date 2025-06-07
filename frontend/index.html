@@ -8,6 +8,13 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- JWT check, if not logged in redirect to login.html -->
+  <script>
+    if (!localStorage.getItem("token")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
   <!-- Navbar -->
   <div id="navbar-container"></div>
 

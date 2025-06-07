@@ -16,6 +16,23 @@ const db = await mysql.createConnection({
   password: process.env.DB_PASS,
 });
 
+// Authenticate JWT token
+export function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401); // No token provided
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    // Invalid token
+    if (err) return res.sendStatus(403); 
+
+    req.user = user;
+    next();
+  });
+}
+
+// login endpoint - verifies user credentials and returns a JWT token
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const [rows] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);

@@ -55,9 +55,15 @@ function uploadFiles() {
     return;
   }
 
+  // Get JWT token
+  const token = localStorage.getItem("token");
+
   fetch("/upload", {
     method: "POST",
     body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
   })
     .then(response => {
       if (!response.ok) {

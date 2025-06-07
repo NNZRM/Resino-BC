@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from "./chartData.js";
+import authRoutes, { authenticateToken } from './login/auth.js';
+
 
 dotenv.config();
 
@@ -18,6 +20,10 @@ app.use(cors({
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
+
+//Body parser middleware
+app.use('/auth', authRoutes);
+
 
 //Store uploads in memory - 10 MB
 const upload = multer({
@@ -44,7 +50,7 @@ const allowedMimeTypes = [
 ];
 
 //Endpoint to handle file uploads
-app.post("/upload", upload.array("files"), async (req, res) => {
+app.post("/upload", authenticateToken, upload.array("files"), async (req, res) => {
   const sftp = new SFTPClient();
   const now = new Date();
 

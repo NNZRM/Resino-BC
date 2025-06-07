@@ -4,6 +4,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// I've done so we can only create users from the server side, not from the frontend.
+// Set password and username.
+
+// cd /var/www/resino-bc/Resino-BC/backend/login
+// node create-user.js
+
 const username = 'resino';
 const plainPassword = 'resino123';
 
