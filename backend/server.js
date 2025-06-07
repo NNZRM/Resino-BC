@@ -29,10 +29,10 @@ app.use('/auth', authRoutes);
 
 
 
-//Store uploads in memory - 10 MB
+//Store uploads in memory - 20 MB
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 },
 });
 
 app.use((req, res, next) => {
