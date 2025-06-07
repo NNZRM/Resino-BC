@@ -1,7 +1,6 @@
-//BC data chart
 function chartsRenderChart(data) {
+  // Revenue Chart
   const ctx = document.getElementById("charts-myChart").getContext("2d");
-
   new Chart(ctx, {
     type: "line",
     data: {
@@ -48,11 +47,42 @@ function chartsRenderChart(data) {
     }
   });
 
+  // Volume Chart
+  const ctxBudget = document.getElementById("charts-budgetChart").getContext("2d");
+  new Chart(ctxBudget, {
+    type: "line",
+    data: {
+      labels: data.labels,
+      datasets: [
+        {
+          label: "Budget Only",
+          data: data.valuesBudget,
+          borderColor: "green",
+          backgroundColor: "lightgreen",
+          fill: false,
+          tension: 0.2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
   document.getElementById("charts-loading").style.display = "none";
   document.getElementById("charts-myChart").style.display = "block";
+  document.getElementById("charts-budgetChart").style.display = "block";
 }
-
-
 
 function chartsShowError(message) {
   document.getElementById("charts-loading").textContent = "⚠️ " + message;
@@ -60,10 +90,10 @@ function chartsShowError(message) {
 
 // Retrieve KontoNummer from Zoho CRM when the page loads and render charts
 ZOHO.embeddedApp.on("PageLoad", function(data) {
-  console.log("🔍 PageLoad data from Zoho CRM:", data);
+  console.log("PageLoad data from Zoho CRM:", data);
 
   const accountId = data.EntityId;
-  document.getElementById("charts-header").textContent = `Business Central Graph (ID: ${accountId})`;
+  document.getElementById("charts-header").textContent = `Revenue Chart (Budget Shows 2023, data had no 2025)`;
 
   fetch("/get-kontonummer", {
     method: "POST",
