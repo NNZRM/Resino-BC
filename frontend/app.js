@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  loadComponent("navbar.html", "navbar-container");
+  loadComponent("navbar.html", "navbar-container", renderAuthNav);
   loadComponent("footer.html", "footer-container");
-  renderAuthNav();
 });
 
 function loadComponent(file, containerId) {
@@ -9,10 +8,10 @@ function loadComponent(file, containerId) {
     .then(response => response.text())
     .then(html => {
       document.getElementById(containerId).innerHTML = html;
+      if (callback) callback();
     })
     .catch(err => console.error(`Failed to load ${file}:`, err));
 }
-
 
 function uploadFiles() {
   const messageBox = document.getElementById("message");
@@ -96,7 +95,6 @@ function renderAuthNav() {
   if (!nav) return;
 
   const token = localStorage.getItem("token");
-
   if (token) {
     nav.innerHTML = `
       <li class="nav-item">
