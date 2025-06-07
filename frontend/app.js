@@ -3,15 +3,18 @@ document.addEventListener("DOMContentLoaded", () => {
   loadComponent("footer.html", "footer-container");
 });
 
-function loadComponent(file, containerId) {
+function loadComponent(file, containerId, callback) {
   fetch(file)
     .then(response => response.text())
     .then(html => {
       document.getElementById(containerId).innerHTML = html;
-      if (callback) callback();
+      if (typeof callback === "function") {
+        callback();
+      }
     })
     .catch(err => console.error(`Failed to load ${file}:`, err));
 }
+
 
 function uploadFiles() {
   const messageBox = document.getElementById("message");
