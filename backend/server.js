@@ -14,6 +14,9 @@ dotenv.config();
 const app = express();
 const port = 8000;
 
+//Parse JSON request bodies
+app.use(express.json());
+
 //CORS config
 app.use(cors({
   origin: '*',
@@ -23,6 +26,8 @@ app.use(cors({
 
 //Body parser middleware
 app.use('/auth', authRoutes);
+
+
 
 //Store uploads in memory - 10 MB
 const upload = multer({
