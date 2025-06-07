@@ -1,6 +1,7 @@
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   loadComponent("navbar.html", "navbar-container");
   loadComponent("footer.html", "footer-container");
+  renderAuthNav();
 });
 
 function loadComponent(file, containerId) {
@@ -87,4 +88,36 @@ function showMessage(text, type) {
   const messageBox = document.getElementById("message");
   messageBox.className = `alert alert-${type}`;
   messageBox.textContent = text;
+}
+
+//Render login or logout in navbar
+function renderAuthNav() {
+  const nav = document.getElementById("auth-nav");
+  if (!nav) return;
+
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    nav.innerHTML = `
+      <li class="nav-item">
+        <a class="nav-link text-white" href="#" onclick="logout()">
+          <span class="fas fa-sign-out-alt"></span> Logout
+        </a>
+      </li>
+    `;
+  } else {
+    nav.innerHTML = `
+      <li class="nav-item">
+        <a class="nav-link text-white" href="login.html">
+          <span class="fas fa-sign-in-alt"></span> Login
+        </a>
+      </li>
+    `;
+  }
+}
+
+//Log out
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
 }
