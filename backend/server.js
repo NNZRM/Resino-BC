@@ -27,8 +27,6 @@ app.use(cors({
 //Body parser middleware
 app.use('/auth', authRoutes);
 
-
-
 //Store uploads in memory - 20 MB
 const upload = multer({
   storage: multer.memoryStorage(),
