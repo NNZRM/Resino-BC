@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({path: '../../.env'});
 
 // I've done so we can only create users from the server side, not from the frontend.
 

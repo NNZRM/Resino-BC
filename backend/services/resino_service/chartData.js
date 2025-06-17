@@ -4,7 +4,7 @@ import xlsx from "xlsx";
 import stream from "stream";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({path: '../../.env'});
 
 const sftpConfig = {
     host: process.env.SFTP_HOST,
