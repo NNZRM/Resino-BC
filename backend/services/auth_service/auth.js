@@ -9,13 +9,14 @@ dotenv.config();
 const router = express.Router();
 const jwtSecret = process.env.JWT_SECRET;
 
+//Pool to ensure efficient database connections
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
   password: process.env.DB_PASS,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: 30,
   queueLimit: 0
 });
 
@@ -43,7 +44,6 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: "Missing username or password" });
     }
 
-    //Pool to get a fresh connection, so we don't get connection issues like before...
     const [rows] = await pool.execute('SELECT * FROM users WHERE username = ?', [username]);
     console.log('Matching user(s):', rows);
 
@@ -58,13 +58,14 @@ router.post('/login', async (req, res) => {
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials (wrong password)' });
     }
-
-    const token = jwt.sign({ id: user.id, username: user.username }, jwtSecret, { expiresIn: '1h' });
-    console.log('✅ JWT token generated:', token);
+    
+    // Generate JWT token
+    const token = jwt.sign({ id: user.id, username: user.username, company_id: user.company_id }, jwtSecret, { expiresIn: '1h' });
+    console.log('JWT token generated:', token);
 
     res.json({ token });
   } catch (err) {
-    console.error('❌ Login error:', err);
+    console.error('Login error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

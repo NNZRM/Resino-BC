@@ -5,13 +5,15 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // I've done so we can only create users from the server side, not from the frontend.
-// Set password and username.
 
-// cd /var/www/resino-bc/Resino-BC/backend/login
+
+// cd /var/www/resino-bc/Resino-BC/backend/services/auth_service
 // node create-user.js
 
-const username = 'resino';
-const plainPassword = 'resino123';
+// Set password, username and company.
+const username = '';
+const plainPassword = '';
+companyId = 1;
 
 const run = async () => {
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -25,8 +27,8 @@ const run = async () => {
   console.log('Connected to database',username);
 
   const [result] = await db.execute(
-    'INSERT INTO users (username, password) VALUES (?, ?)',
-    [username, hashedPassword]
+    'INSERT INTO users (username, password, company_id) VALUES (?, ?, ?)',
+    [username, hashedPassword, companyId]
   );
 
   console.log(`User '${username}' created with ID:`, result.insertId);
