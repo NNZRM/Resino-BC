@@ -8,12 +8,19 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <!-- JWT check, if not logged in redirect to login.html -->
+  <!-- JWT check - Use JWT decoder -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
   <script>
-    if (!localStorage.getItem("token")) {
-      window.location.href = "login.html";
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+  } else {
+    const payload = jwt_decode(token);
+    if (payload.company_slug !== "resino") {
+      window.location.href = "unauthorized.html";
     }
-  </script>
+  }
+</script>
 
   <!-- Navbar -->
   <div id="navbar-container"></div>

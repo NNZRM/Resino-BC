@@ -58,9 +58,13 @@ router.post('/login', async (req, res) => {
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials (wrong password)' });
     }
+
+    // Fetch company slug
+    const [companyRows] = await pool.execute('SELECT slug FROM companies WHERE id = ?', [user.company_id]);
+    const companySlug = companyRow[0]?.slug;
     
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, username: user.username, company_id: user.company_id }, jwtSecret, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username, company_id: user.company_id, company_slug: companySlug  }, jwtSecret, { expiresIn: '1h' });
     console.log('JWT token generated:', token);
 
     res.json({ token });

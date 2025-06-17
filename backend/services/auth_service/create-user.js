@@ -11,9 +11,9 @@ dotenv.config({path: '../../.env'});
 // node create-user.js
 
 // Set password, username and company.
-const username = '';
-const plainPassword = '';
-companyId = 1;
+const username = 'ZRM User';
+const plainPassword = 'zrm123';
+companyId = 2;
 
 const run = async () => {
   const hashedPassword = await bcrypt.hash(plainPassword, 10);

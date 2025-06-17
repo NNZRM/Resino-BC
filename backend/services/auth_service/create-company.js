@@ -7,8 +7,8 @@ dotenv.config({path: '../../.env'});
 // node create-company.js
 
 // Set name, slug
-const name = 'Resino';
-const slug = 'resino';
+const name = 'ZRM';
+const slug = 'zrm';
 
 const run = async () => {
   const db = await mysql.createConnection({
