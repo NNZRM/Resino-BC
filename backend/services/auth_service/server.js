@@ -16,3 +16,4 @@ app.use('/auth', authRoutes);
 app.listen(port, () => {
   console.log(`Auth Service running on port ${port}`);
 });
+//TETSETSETSET
