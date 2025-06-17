@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from './chartData.js';
-import { authenticateToken } from '../../auth_service/auth.js';
+import { authenticateToken } from './middleware/auth.js';
 
 dotenv.config({ path: '../../.env' });
 
