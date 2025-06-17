@@ -4,9 +4,9 @@ import SFTPClient from "ssh2-sftp-client";
 import path from "path";
 import dotenv from "dotenv";
 import cors from 'cors';
-import { fetchAccount } from './zoho.js';
-import { extractChartData } from "./chartData.js";
-import authRoutes, { authenticateToken } from './login/auth.js';
+import { fetchAccount } from './services/resino_service/zoho.js';
+import { extractChartData } from "./services/resino_service/chartData.js";
+import authRoutes, { authenticateToken } from './services/auth_service/auth.js';
 
 
 dotenv.config();
