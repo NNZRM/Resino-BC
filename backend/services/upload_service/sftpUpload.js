@@ -1,8 +1,6 @@
 import SFTPClient from "ssh2-sftp-client";
 import dotenv from "dotenv";
 
-//Yo
-
 dotenv.config({path: '../../.env'});
 
 const sftpConfig = {
@@ -20,7 +18,7 @@ const allowedMimeTypes = [
 
 export async function handleUpload(req, res) {
   const sftp = new SFTPClient();
-  const remoteBasePath = `/root/uploads/resino`; // You can make this dynamic later
+  const remoteBasePath = `/home/uploaduser/uploads/resino`
 
   try {
     await sftp.connect(sftpConfig);

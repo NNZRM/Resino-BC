@@ -40,6 +40,15 @@ services:
     networks:
       - backend
 
+  # SFTP Server
+  sftp_server:
+    image: atmoz/sftp
+    volumes:
+      - ./uploads:/home/uploaduser/uploads
+    ports:
+      - "2222:22"
+    command: uploaduser:password:1001
+
   # MariaDB Container
   mariadb:
     image: mariadb:11
@@ -60,6 +69,7 @@ services:
 
 volumes:
   mariadb_data:
+
 
 networks:
   backend:
