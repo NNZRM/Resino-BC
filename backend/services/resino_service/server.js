@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from './chartData.js';
-import { authenticateToken } from './auth.js';
+// import { authenticateToken } from './auth.js';
 
 dotenv.config({ path: '../../.env' });
 
@@ -12,9 +12,10 @@ const port = 8000;
 
 app.use(cors());
 app.use(express.json());
-
+/*
 //Authenticate JWT token
 app.use(authenticateToken);
+*/
 
 app.post('/get-kontonummer', async (req, res) => {
   const { accountId } = req.body;
@@ -30,12 +31,14 @@ app.post('/get-kontonummer', async (req, res) => {
 });
 
 
-app.get('/get-chart-data', authenticateToken, async (req, res) => {
+app.get('/get-chart-data', async (req, res) => {
   //Secure the endpoint to only resino company
+  /*
   const { company_slug } = req.user;
   if (company_slug !== 'resino') {
     return res.status(403).json({ error: "Access denied" });
   }
+    */
 
   const konto = req.query.konto;
   if (!konto) return res.status(400).json({ error: "Missing konto" });
