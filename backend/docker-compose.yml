@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 🔐 Auth Service
+  # Auth Service
   auth_service:
     build:
       context: ./services/auth_service
@@ -14,7 +14,7 @@ services:
     networks:
       - backend
 
-  # 📤 Upload Service
+  # Upload Service
   upload_service:
     build:
       context: ./services/upload_service
@@ -27,7 +27,7 @@ services:
     networks:
       - backend
 
-  # 📊 Resino Service
+  # Resino Service
   resino_service:
     build:
       context: ./services/resino_service
@@ -40,7 +40,7 @@ services:
     networks:
       - backend
 
-  # 🐬 MariaDB Container
+  # MariaDB Container
   mariadb:
     image: mariadb:11
     container_name: mariadb

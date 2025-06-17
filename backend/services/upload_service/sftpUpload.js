@@ -9,6 +9,7 @@ const sftpConfig = {
   username: process.env.SFTP_USER,
   password: process.env.SFTP_PASS,
 };
+console.log("SFTP Config:", sftpConfig);
 
 const allowedMimeTypes = [
   "text/csv",
