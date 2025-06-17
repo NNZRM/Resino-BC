@@ -7,6 +7,10 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+# avoid clutter on server
+*.save
+*~
+
 # folder
 backend/db_backups/
 
