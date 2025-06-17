@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # 🔐 Auth Service
   auth_service:
     build:
       context: ./services/auth_service
@@ -13,6 +14,7 @@ services:
     networks:
       - backend
 
+  # 📤 Upload Service
   upload_service:
     build:
       context: ./services/upload_service
@@ -25,7 +27,7 @@ services:
     networks:
       - backend
 
-# Resino service
+  # 📊 Resino Service
   resino_service:
     build:
       context: ./services/resino_service
@@ -38,26 +40,26 @@ services:
     networks:
       - backend
 
-#Maria - DB
-mariadb:
-  image: mariadb:11
-  container_name: mariadb
-  restart: unless-stopped
-  environment:
-    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    MYSQL_DATABASE: ${MYSQL_DATABASE}
-    MYSQL_USER: ${MYSQL_USER}
-    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  ports:
-    - "3306:3306"
-  volumes:
-    - mariadb_data:/var/lib/mysql
-    - ./db_backups:/backups
+  # 🐬 MariaDB Container
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./db_backups:/backups
+    networks:
+      - backend
 
 volumes:
   mariadb_data:
-
-
 
 networks:
   backend:
