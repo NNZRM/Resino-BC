@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Fetch company slug
-    const [companyRows] = await pool.execute('SELECT slug FROM companies WHERE id = ?', [user.company_id]);
+    const [companyRow] = await pool.execute('SELECT slug FROM companies WHERE id = ?', [user.company_id]);
     const companySlug = companyRow[0]?.slug;
     
     // Generate JWT token
