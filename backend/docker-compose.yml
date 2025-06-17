@@ -40,14 +40,17 @@ services:
     networks:
       - backend
 
-  # SFTP Server
+    # SFTP Server
   sftp_server:
     image: atmoz/sftp
+    container_name: sftp_server
     volumes:
       - ./uploads:/home/uploaduser/uploads
     ports:
       - "2222:22"
     command: uploaduser:password:1001
+    networks:
+      - backend
 
   # MariaDB Container
   mariadb:
