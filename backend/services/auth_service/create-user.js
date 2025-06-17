@@ -13,7 +13,7 @@ dotenv.config({path: '../../.env'});
 // Set password, username and company.
 const username = 'ZRM User';
 const plainPassword = 'zrm123';
-companyId = 2;
+const companyId = '2';
 
 const run = async () => {
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
