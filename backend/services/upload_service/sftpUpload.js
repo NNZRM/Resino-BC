@@ -18,7 +18,7 @@ const allowedMimeTypes = [
 
 export async function handleUpload(req, res) {
   const sftp = new SFTPClient();
-  const remoteBasePath = `/home/uploaduser/uploads/resino`
+  const remoteBasePath = `/uploads/resino`;
 
   try {
     await sftp.connect(sftpConfig);
