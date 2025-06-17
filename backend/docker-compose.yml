@@ -25,6 +25,7 @@ services:
     networks:
       - backend
 
+# Resino service
   resino_service:
     build:
       context: ./services/resino_service
@@ -36,6 +37,27 @@ services:
     restart: unless-stopped
     networks:
       - backend
+
+#Maria - DB
+mariadb:
+  image: mariadb:11
+  container_name: mariadb
+  restart: unless-stopped
+  environment:
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    MYSQL_DATABASE: ${MYSQL_DATABASE}
+    MYSQL_USER: ${MYSQL_USER}
+    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  ports:
+    - "3306:3306"
+  volumes:
+    - mariadb_data:/var/lib/mysql
+    - ./db_backups:/backups
+
+volumes:
+  mariadb_data:
+
+
 
 networks:
   backend:
