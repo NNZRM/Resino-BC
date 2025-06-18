@@ -93,6 +93,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("PageLoad data from Zoho CRM:", data);
 
   const accountId = data.EntityId;
+  console.log("Account ID YO:", accountId);
   document.getElementById("charts-header").textContent = `Business Central Charts (Budget Shows 2023, data had no 2025)`;
 
   fetch("/get-kontonummer", {

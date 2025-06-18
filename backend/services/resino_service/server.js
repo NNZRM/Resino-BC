@@ -15,7 +15,7 @@ app.use(express.json());
 app.post('/get-kontonummer', async (req, res) => {
   const { accountId } = req.body;
   if (!accountId) return res.status(400).json({ error: "Missing accountId" });
-
+  console.log("YOOO accountId:", accountId);
   try {
     const kontoNummer = await fetchAccount(accountId);
     if (!kontoNummer) return res.status(404).json({ error: "Not found" });
