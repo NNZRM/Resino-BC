@@ -8,15 +8,28 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- JWT check - Use JWT decoder -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+  <script>
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+  } else {
+    const payload = jwt_decode(token);
+    if (payload.company_slug !== "zrm") {
+      window.location.href = "unauthorized.html";
+    }
+  }
+  </script>
+
+  <!-- Navbar -->
   <div id="navbar-container"></div>
 
-    <p>Not Gonna happen buddy, you dont have the required access</p>
+  <p>ZRM ACCESS ONLY</p>
 
     <!-- Footer -->
   <div id="footer-container"></div>
 
-  <!-- JS -->
   <script src="js/app.js"></script>
 </body>
 </html>

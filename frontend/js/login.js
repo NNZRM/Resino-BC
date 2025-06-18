@@ -11,7 +11,19 @@ function handleLogin() {
     .then(({ ok, data }) => {
       if (ok) {
         localStorage.setItem("token", data.token);
-        window.location.href = "index.html";
+
+        //Redirect based on company slug
+        const payload = jwt_decode(data.token);
+        //Resino
+        if (payload.company_slug === "resino") {
+          window.location.href = "index.html";
+        } else if (payload.company_slug === "zrm") {
+          //ZRM
+          window.location.href = "zrmUserCreation.html";
+        } else {
+          //No company page
+          window.location.href = "unauthorized.html";
+        }
       } else {
         alert("Login failed: " + data.error);
       }
