@@ -44,8 +44,8 @@ app.get('/get-chart-data', async (req, res) => {
   if (!konto) return res.status(400).json({ error: "Missing konto" });
 
   try {
-    const bcDataDir = `/home/uploaduser/uploads/resino/bcdata`;
-    const budgetDir = `/home/uploaduser/uploads/resino/budget`;
+    const bcDataDir = `/uploads/resino/bcdata`;
+    const budgetDir = `/uploads/resino/budget`;
     const data = await extractChartData(konto, bcDataDir, budgetDir);
     res.json(data);
   } catch (err) {
