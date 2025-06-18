@@ -17,6 +17,7 @@ console.log("SFTP Config:", sftpConfig);
 const monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "January"];
 
 export async function extractChartData(konto, bcDataDir, budgetDir) {
+    console.log("WADDUP");
     const bcData = await getBCData(konto, bcDataDir);
     const budgetData = await getBudgetData(konto, budgetDir);
     return {
@@ -37,8 +38,24 @@ function detectDelimiter(buffer) {
 async function getBCData(konto, bcDataDir) {
     const sftp = new SFTPClient();
     try {
-        await sftp.connect(sftpConfig);
-        const files = await sftp.list(bcDataDir);
+        console.log("WE HERE at the SFTP server...", sftpConfig);
+        try {
+            console.log("🔌 Attempting to connect to SFTP server...");
+            await sftp.connect(sftpConfig);
+            console.log("✅ SFTP connection established.");
+        } catch (err) {
+            console.error("❌ Failed to connect to SFTP server:", err.message);
+        throw err;
+        }
+
+        try {
+            console.log(`📁 Listing files in: ${bcDataDir}`);
+            const files = await sftp.list(bcDataDir);
+            console.log(`📄 Found ${files.length} file(s):`, files.map(f => f.name));
+        } catch (err) {
+            console.error(`❌ Failed to list directory ${bcDataDir}:`, err.message);
+            throw err;
+        }
         const targetFile = files
         .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
         .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
