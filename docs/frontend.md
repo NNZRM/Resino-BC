@@ -1,6 +1,6 @@
 # Frontend Documentation
 
-This frontend provides the user interface for the Business Central Customer Solutions Platform. It enables users to log in, upload files, and view business data visualizations, with access and features tailored to their company.
+This frontend provides the user interface for the ZRM Solutions Platform. It enables users to log in, upload files, and view business data visualizations, with access and features tailored to their company.
 
 ---
 

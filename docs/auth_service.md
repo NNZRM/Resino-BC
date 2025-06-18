@@ -1,6 +1,6 @@
 # Auth Service Documentation
 
-The `auth_service` is a Node.js Express microservice responsible for user authentication and issuing JWT tokens for your Business Central system. It connects to a MariaDB database to validate users and their associated companies.
+The `auth_service` is a Node.js Express microservice responsible for user authentication and issuing JWT tokens for our ZRM Solutions system. It connects to a MariaDB database to validate users and their associated companies.
 
 ---
 

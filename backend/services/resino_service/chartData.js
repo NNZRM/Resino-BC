@@ -2,9 +2,7 @@ import SFTPClient from "ssh2-sftp-client";
 import csv from "csv-parser";
 import xlsx from "xlsx";
 import stream from "stream";
-import dotenv from "dotenv";
 
-//dotenv.config();
 
 const sftpConfig = {
     host: process.env.SFTP_HOST,
@@ -17,7 +15,6 @@ console.log("SFTP Config:", sftpConfig);
 const monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "January"];
 
 export async function extractChartData(konto, bcDataDir, budgetDir) {
-    console.log("WADDUP");
     const bcData = await getBCData(konto, bcDataDir);
     const budgetData = await getBudgetData(konto, budgetDir);
     return {

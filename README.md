@@ -14,7 +14,7 @@ This project is a platform for customer solutions, designed to streamline the in
 
 ## Tech Stack
 
-- **Frontend:** HTML, CSS, JavaScript, Bootstrap
+- **Frontend:** HTML, CSS, JavaScript, Bootstrap, Charts.js
 - **Backend:** Node.js, Express.js
 - **Database:** MariaDB
 - **Authentication:** JWT (JSON Web Tokens)

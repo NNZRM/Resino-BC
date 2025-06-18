@@ -1,6 +1,6 @@
 # Upload Service Documentation
 
-The `upload_service` is a Node.js Express microservice responsible for securely uploading files to a remote SFTP server. It is designed to be used by authenticated users and supports uploading both business central data and budget files for the Resino company.
+The `upload_service` is a Node.js Express microservice responsible for securely uploading files to a remote SFTP server. It is designed to be used by authenticated users.
 
 ---
 
