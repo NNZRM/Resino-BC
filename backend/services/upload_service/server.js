@@ -5,7 +5,7 @@ import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { handleUpload } from './sftpUpload.js';
 
-dotenv.config({ path: '../../.env' });
+dotenv.config();
 
 const app = express();
 const port = 8000;

@@ -9,7 +9,7 @@ services:
     ports:
       - "8001:8000"
     env_file:
-      - .env
+      - ../../.env
     restart: unless-stopped
     networks:
       - backend
@@ -22,7 +22,7 @@ services:
     ports:
       - "8002:8000"
     env_file:
-      - .env
+      - ../../.env
     restart: unless-stopped
     networks:
       - backend
@@ -35,7 +35,7 @@ services:
     ports:
       - "8003:8000"
     env_file:
-      - .env
+      - ../../.env
     restart: unless-stopped
     networks:
       - backend

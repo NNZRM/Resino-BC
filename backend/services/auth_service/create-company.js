@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
-dotenv.config({path: '../../.env'});
+dotenv.config();
 
 // cd /var/www/resino-bc/Resino-BC/backend/services/auth_service
 // node create-company.js

@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 
-dotenv.config({path: '../../.env'});
+dotenv.config();
 
 const router = express.Router();
 const jwtSecret = process.env.JWT_SECRET;

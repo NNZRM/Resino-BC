@@ -1,7 +1,7 @@
 import SFTPClient from "ssh2-sftp-client";
 import dotenv from "dotenv";
 
-dotenv.config({path: '../../.env'});
+dotenv.config();
 
 const sftpConfig = {
   host: process.env.SFTP_HOST,

@@ -4,7 +4,7 @@ import fs from 'fs';
 export { fetchAccount };
 
 
-dotenv.config({path: '../../.env'});
+dotenv.config();
 
 let ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
