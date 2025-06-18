@@ -1,27 +1,22 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
-import fs from 'fs';
-export { fetchAccount };
-import path from 'path';
-const ENV_PATH = path.resolve(process.cwd(), '../../.env');
 
-//dotenv.config();
+dotenv.config(); // Automatically loads from default `.env` in container
 
+// Read initial tokens from environment
 let ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-//const ENV_PATH = '../../.env';
 
 console.log("config", {
   ACCESS_TOKEN,
   REFRESH_TOKEN,
   CLIENT_ID,
-  CLIENT_SECRET,
-  ENV_PATH
+  CLIENT_SECRET
 });
 
-// Refresh the access token if its expired
+// 🔁 Refresh the access token (in memory only)
 async function refreshAccessToken() {
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
@@ -38,25 +33,20 @@ async function refreshAccessToken() {
     });
 
     const newToken = response.data.access_token;
-    console.log('Refreshed Access Token:', newToken);
+    console.log('✅ Refreshed Access Token:', newToken);
 
-    // Update .env file
-    const envContent = fs.readFileSync(ENV_PATH, 'utf-8');
-    const updated = envContent.replace(/ACCESS_TOKEN=.*/g, `ACCESS_TOKEN=${newToken}`);
-    fs.writeFileSync(ENV_PATH, updated);
-
-    // Update in-memory token
+    // 🔄 Update in-memory token (not the .env file)
     ACCESS_TOKEN = newToken;
 
     return newToken;
   } catch (error) {
-    console.error('Failed to refresh token:', error.response?.data || error.message);
+    console.error('❌ Failed to refresh token:', error.response?.data || error.message);
     throw error;
   }
 }
 
-//Fetch account "Konto Nummer" from Zoho CRM
-async function fetchAccount(id) {
+// 🔍 Fetch account data from Zoho CRM
+export async function fetchAccount(id) {
   try {
     const response = await axios.get(`https://www.zohoapis.eu/crm/v8/Accounts/${id}`, {
       headers: {
@@ -68,16 +58,16 @@ async function fetchAccount(id) {
     });
 
     const account = response.data.data[0];
-    console.log('Account:', account);
+    console.log('📦 Account:', account);
     return account.Konto_Nummer1;
   } catch (error) {
     if (error.response?.status === 401) {
-      console.warn('Token expired. Refreshing...');
+      console.warn('⚠️ Token expired. Refreshing...');
       await refreshAccessToken();
-      return fetchAccount(id);
+      return fetchAccount(id); // 🔁 Retry after refresh
     }
 
-    console.error('Failed to fetch account:', error.response?.data || error.message);
+    console.error('❌ Failed to fetch account:', error.response?.data || error.message);
     return null;
   }
 }

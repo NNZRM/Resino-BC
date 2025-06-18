@@ -4,7 +4,7 @@ import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from './chartData.js';
 
-//dotenv.config();
+dotenv.config();
 
 const app = express();
 const port = 8000;
@@ -15,6 +15,7 @@ app.use(express.json());
 app.post('/get-kontonummer', async (req, res) => {
   const { accountId } = req.body;
   if (!accountId) return res.status(400).json({ error: "Missing accountId" });
+
   console.log("YOOO accountId:", accountId);
   try {
     const kontoNummer = await fetchAccount(accountId);
@@ -24,6 +25,7 @@ app.post('/get-kontonummer', async (req, res) => {
     res.status(500).json({ error: "Failed to fetch account" });
   }
 });
+
 
 
 app.get('/get-chart-data', async (req, res) => {
