@@ -39,28 +39,12 @@ async function getBCData(konto, bcDataDir) {
     const sftp = new SFTPClient();
     let files;
     try {
-        console.log("WE HERE at the SFTP server...", sftpConfig);
-        try {
-            console.log("🔌 Attempting to connect to SFTP server...");
-            await sftp.connect(sftpConfig);
-            console.log("✅ SFTP connection established.");
-        } catch (err) {
-            console.error("❌ Failed to connect to SFTP server:", err.message);
-        throw err;
-        }
-        try {
-            console.log(`📁 Listing files in: ${bcDataDir}`);
-            files = await sftp.list(bcDataDir); 
-            console.log(`📄 Found ${files.length} file(s):`, files.map(f => f.name));
-        } catch (err) {
-            console.error(`❌ Failed to list directory ${bcDataDir}:`, err.message);
-            throw err;
-        }
+        await sftp.connect(sftpConfig);
+        files = await sftp.list(bcDataDir); 
         const targetFile = files
         .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
         .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
         // If no file found, throw an error
-        console.log("yo", targetFile);
         if (!targetFile) throw new Error("No file found in bcdata folder.");
 
         const fullPath = `${bcDataDir}/${targetFile.name}`;
@@ -132,11 +116,10 @@ async function getBCData(konto, bcDataDir) {
 //Retrieve budget data
 async function getBudgetData(konto, budgetDir) {
     const sftp = new SFTPClient();
+    let budgetFiles;
     try {
         await sftp.connect(sftpConfig);
-        console.log("Connected to SFTP");
-        const budgetFiles = await sftp.list(budgetDir);
-        console.log("Files in bcDataDir:", files.map(f => f.name));
+        budgetFiles = await sftp.list(budgetDir);
 
         const currentYear = 2023; //new Date().getFullYear();
         const monthlyBudget = Array(12).fill(0);
