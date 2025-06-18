@@ -2,6 +2,8 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import fs from 'fs';
 export { fetchAccount };
+import path from 'path';
+const ENV_PATH = path.resolve(process.cwd(), '../../.env');
 
 //dotenv.config();
 
@@ -9,7 +11,7 @@ let ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const ENV_PATH = './../env';
+//const ENV_PATH = '../../.env';
 
 console.log("config", {
   ACCESS_TOKEN,
