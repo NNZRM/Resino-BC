@@ -12,6 +12,7 @@ const sftpConfig = {
     username: process.env.SFTP_USER,
     password: process.env.SFTP_PASS,
 };
+console.log("SFTP Config:", sftpConfig);
 
 const monthOrder = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "January"];
 
@@ -41,7 +42,8 @@ async function getBCData(konto, bcDataDir) {
         const targetFile = files
         .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
         .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
-
+        // If no file found, throw an error
+        console.log("yo", targetFile);
         if (!targetFile) throw new Error("No file found in bcdata folder.");
 
         const fullPath = `${bcDataDir}/${targetFile.name}`;

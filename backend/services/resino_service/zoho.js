@@ -9,7 +9,15 @@ let ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const ENV_PATH = '.env';
+const ENV_PATH = './../env';
+
+console.log("config", {
+  ACCESS_TOKEN,
+  REFRESH_TOKEN,
+  CLIENT_ID,
+  CLIENT_SECRET,
+  ENV_PATH
+});
 
 // Refresh the access token if its expired
 async function refreshAccessToken() {
