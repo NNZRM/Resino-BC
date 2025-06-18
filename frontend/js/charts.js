@@ -105,8 +105,6 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
   })
     .then(res => res.json())
     .then(data => {
-      console.log("KontoNummer received:", data.kontoNummer);
-
       // Use "Konto Nummer" to fetch chart data from SFTP server
       fetch(`/get-chart-data?konto=${data.kontoNummer}`)
         .then(res => res.json())
