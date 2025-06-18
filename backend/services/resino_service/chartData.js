@@ -37,6 +37,7 @@ function detectDelimiter(buffer) {
 // Retrieve BC data 
 async function getBCData(konto, bcDataDir) {
     const sftp = new SFTPClient();
+    let files;
     try {
         console.log("WE HERE at the SFTP server...", sftpConfig);
         try {
@@ -47,8 +48,14 @@ async function getBCData(konto, bcDataDir) {
             console.error("❌ Failed to connect to SFTP server:", err.message);
         throw err;
         }
-        files = await sftp.list(bcDataDir);
-        console.log("Files baby:", files);
+        try {
+            console.log(`📁 Listing files in: ${bcDataDir}`);
+            files = await sftp.list(bcDataDir); 
+            console.log(`📄 Found ${files.length} file(s):`, files.map(f => f.name));
+        } catch (err) {
+            console.error(`❌ Failed to list directory ${bcDataDir}:`, err.message);
+            throw err;
+        }
         const targetFile = files
         .filter(f => f.name.endsWith(".csv") || f.name.endsWith(".xlsx"))
         .sort((a, b) => new Date(b.modifyTime) - new Date(a.modifyTime))[0];
