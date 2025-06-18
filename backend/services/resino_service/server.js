@@ -4,7 +4,7 @@ import cors from 'cors';
 import { fetchAccount } from './zoho.js';
 import { extractChartData } from './chartData.js';
 
-dotenv.config();
+//dotenv.config();
 
 const app = express();
 const port = 8000;
