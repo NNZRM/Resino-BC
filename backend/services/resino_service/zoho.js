@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 export { fetchAccount };
 
-
 dotenv.config();
 
 let ACCESS_TOKEN = process.env.ACCESS_TOKEN;
