@@ -12,6 +12,7 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
+//Get Zoho Account by ID
 app.post('/get-kontonummer', async (req, res) => {
   const { accountId } = req.body;
   if (!accountId) return res.status(400).json({ error: "Missing accountId" });
@@ -27,7 +28,7 @@ app.post('/get-kontonummer', async (req, res) => {
 });
 
 
-
+//Retrieve data from SFTP server to generate chart data
 app.get('/get-chart-data', async (req, res) => {
   const konto = req.query.konto;
   if (!konto) return res.status(400).json({ error: "Missing konto" });

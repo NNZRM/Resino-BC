@@ -9,7 +9,6 @@ const sftpConfig = {
   username: process.env.SFTP_USER,
   password: process.env.SFTP_PASS,
 };
-console.log("SFTP Config:", sftpConfig);
 
 const allowedMimeTypes = [
   "text/csv",
@@ -21,6 +20,7 @@ export async function handleUpload(req, res) {
   const remoteBasePath = `/uploads/resino`;
 
   try {
+    //Set up SFTP connection
     await sftp.connect(sftpConfig);
     try { await sftp.mkdir(remoteBasePath, true); } catch (e) {}
 
@@ -29,18 +29,23 @@ export async function handleUpload(req, res) {
     const typeArray = Array.isArray(types) ? types : [types];
     const cleanedFolders = new Set();
 
+    //For each all the files
     for (let i = 0; i < req.files.length; i++) {
       const file = req.files[i];
       const fileType = typeArray[i];
 
+      //Check for accepted file types
       if (!allowedMimeTypes.includes(file.mimetype)) continue;
 
+      
+      //Each file is assigned to a folder based on its type from the html (either "budget" or "bcdata"). This is currently hardcoded and could be made more dynamic.
       const typeFolder = fileType === "budget" ? "budget" : "bcdata";
       const folderPath = `${remoteBasePath}/${typeFolder}`;
       const remotePath = `${folderPath}/${file.originalname}`;
 
       try { await sftp.mkdir(folderPath, true); } catch (e) {}
 
+      //Clean old files
       if (!cleanedFolders.has(typeFolder)) {
         const existingFiles = await sftp.list(folderPath);
         for (const f of existingFiles) {
@@ -50,7 +55,7 @@ export async function handleUpload(req, res) {
         }
         cleanedFolders.add(typeFolder);
       }
-
+      //File uploaded to its folder
       await sftp.put(file.buffer, remotePath);
       uploadedFiles.push({ file: file.originalname, type: fileType });
     }

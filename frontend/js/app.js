@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadComponent("components/footer.html", "footer-container");
 });
 
+//Load HTML components dynamically
 function loadComponent(file, containerId, callback) {
   fetch(file)
     .then(response => response.text())
@@ -15,12 +16,13 @@ function loadComponent(file, containerId, callback) {
     .catch(err => console.error(`Failed to load ${file}:`, err));
 }
 
-//
+//Remove file button
 function removeFile(inputId) {
     const input = document.getElementById(inputId);
     input.value = "";
   }
 
+//Upload files to the server
 function uploadFiles() {
   const messageBox = document.getElementById("message");
   messageBox.classList.add("d-none");
@@ -66,6 +68,7 @@ function uploadFiles() {
   // Get JWT token
   const token = localStorage.getItem("token");
 
+  //Upload files to the server
   fetch("/upload", {
     method: "POST",
     body: formData,
@@ -126,7 +129,7 @@ function renderAuthNav() {
   }
 }
 
-//Log out
+//Log out - JWT token is removed from localStorage
 function logout() {
   localStorage.removeItem("token");
   window.location.href = "login.html";

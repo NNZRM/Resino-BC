@@ -50,7 +50,7 @@ router.post('/login', async (req, res) => {
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials (user not found)' });
     }
-
+    // compare password with hashed password in database
     const user = rows[0];
     const match = await bcrypt.compare(password, user.password);
     console.log('Password match?', match);

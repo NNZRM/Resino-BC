@@ -79,6 +79,7 @@ function chartsRenderChart(data) {
     }
   });
 
+  //Load Charts to HTML
   document.getElementById("charts-loading").style.display = "none";
   document.getElementById("charts-revenueChart").style.display = "block";
   document.getElementById("charts-budgetChart").style.display = "block";
@@ -89,13 +90,14 @@ function chartsShowError(message) {
 }
 
 // Retrieve KontoNummer from Zoho CRM when the page loads and render charts
+// Zoho CRM Embedded JS SDK - Loads the embedded app and listens for page load events
 ZOHO.embeddedApp.on("PageLoad", function(data) {
   console.log("PageLoad data from Zoho CRM:", data);
 
   const accountId = data.EntityId;
   console.log("Account ID YO:", accountId);
   document.getElementById("charts-header").textContent = `Business Central Charts (Budget Shows 2023, data had no 2025)`;
-
+  //Get KontoNummer from Zoho CRM using the accountId
   fetch("/get-kontonummer", {
     method: "POST",
     headers: {
@@ -115,7 +117,7 @@ ZOHO.embeddedApp.on("PageLoad", function(data) {
             chartsShowError("No chart data found.");
             return;
           }
-
+          // Render the charts with the fetched data
           chartsRenderChart({
             labels: chartData.labels,
             values: chartData.values,

@@ -3,7 +3,6 @@ import csv from "csv-parser";
 import xlsx from "xlsx";
 import stream from "stream";
 
-
 const sftpConfig = {
     host: process.env.SFTP_HOST,
     port: process.env.SFTP_PORT,
@@ -23,7 +22,7 @@ export async function extractChartData(konto, bcDataDir, budgetDir) {
     };
 }
 
-// Check if the seperator in the CSV file is comma or semicolon
+// Check if the seperator in the CSV file is comma or semicolon (English or Danish format)
 function detectDelimiter(buffer) {
     const preview = buffer.toString("utf8", 0, 1024);
     if (preview.includes(";")) return ";";
@@ -61,10 +60,11 @@ async function getBCData(konto, bcDataDir) {
             const parser = readable.pipe(csv({ separator: delimiter }));
 
             for await (const row of parser) {
+                //Retrieve rows where the Konto no. match
                 if (row["Account no."] === konto && row["Annual Revenue"]) {
                     const annualRevenue = parseFloat(row["Annual Revenue"]);
                     const lastYearRevenue = parseFloat(row["Last years revenue"]);
-
+                    //For testing these values, were stread across the months
                     const monthlyStep = annualRevenue / monthOrder.length;
                     const monthlyStepLast = lastYearRevenue / monthOrder.length;
 
@@ -118,6 +118,7 @@ async function getBudgetData(konto, budgetDir) {
         await sftp.connect(sftpConfig);
         budgetFiles = await sftp.list(budgetDir);
 
+        //THIS IS TEMPORARY, DATESET ONLY HAD 2023. Should be replaced with a more dynamic way to get the current year
         const currentYear = 2023; //new Date().getFullYear();
         const monthlyBudget = Array(12).fill(0);
 
@@ -136,6 +137,7 @@ async function getBudgetData(konto, budgetDir) {
                 const parser = readable.pipe(csv({ separator: delimiter }));
 
                 for await (const row of parser) {
+                    //Retrieve rows where the Konto no. match
                     if (row["Account no."] === konto && parseInt(row["Year"]) === currentYear) { 
                         const month = parseInt(row["Month"]);
                         // Refactor amount so inconsistent ',' or '.' are removed
@@ -174,7 +176,7 @@ async function getBudgetData(konto, budgetDir) {
 
     await sftp.end();
 
-    // Cumulate the monthly budget
+    // Cumulate the monthly budget, to a list
     for (let i = 1; i < monthlyBudget.length; i++) {
         monthlyBudget[i] += monthlyBudget[i - 1];
     }
